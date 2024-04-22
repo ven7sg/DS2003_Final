@@ -1,3 +1,4 @@
+
 library(shiny)
 library(ggplot2)
 library(maps)
@@ -10,42 +11,51 @@ library(plotly)
 library(shinythemes)
 
 
-# LOAD DATA 
-ath_data <- read.csv("~/Desktop/DS2003_Shiny/athlete_events.csv")
-con_data <- read.csv("~/Desktop/DS2003_Shiny/noc_regions.csv")
+
+ath_data <- read.csv("athlete_events.csv")
+con_data <- read.csv("noc_regions.csv")
+
 
 ath_data <- ath_data %>%
   filter(Sport != "Art Competitions") %>%
   mutate(Year = ifelse(Year %in% c(1994, 1998, 2002, 2006, 2010, 2014), Year + 2, Year))
 
+
 ui <- fluidPage(
-  theme = shinytheme("superhero"),  # Applying Bootstrap's Superhero theme
+  theme = shinytheme("slate"),
   titlePanel("Olympic Data Analysis"),
   
   # Create a tabbed layout
   tabsetPanel(
-    tabPanel("Introduction",
+    ###############intro tab###################
+    tabPanel("Introduction into Olympic DataSet",
              fluidPage(
-               h1("Introduction"),
-               p("text."),
-               # img(src = "intro.jpg", height = "200px"),  
-               tags$ul(
-                 tags$li("Bullet point."),
-                 tags$li("Bullet point."),
-                 tags$li("Bullet point.")
-               )
-             )),
+               mainPanel(
+                 div(img(src = "olympicDataIntro.png",style = "text-align: center;", height = 600, width = 1000))
+             ))),
+    #################Q1 tab#####################
     tabPanel("Question 1 - World Map",
              fluidPage(
+               # Application title
                titlePanel("World Map with ggplot2"),
-               selectInput("sport", "Pick a sport!", choices = unique(ath_data$Sport), selected = "Tug-Of-War"),
-               sliderInput("year", "Select a year for the games", min = 1896, max = 2016, value = 1896, step = 2),
-               selectInput("country", "Pick a Country!", choices = unique(ath_data$Team), selected = "Denmark/Sweden"),
-               h4("Medals Won:"),
-               textOutput("medal_count"),
-               textOutput("total_medal_count"),
-               plotOutput("world_map")
+               
+               sidebarLayout(
+                 sidebarPanel(
+                   selectInput("sport", "Pick a sport!", choices = unique(ath_data$Sport), selected = "Tug-Of-War"),
+                   sliderInput("year", "Select a year for the games", min = 1896, max = 2016, value = 1896, step = 2),
+                   selectInput("country", "Pick a Country!", choices = unique(ath_data$Team), selected = "Denmark/Sweden")
+                 ),
+                 
+                 mainPanel(
+                   h4("Medals Won:"),
+                   textOutput("medal_count"),
+                   textOutput("total_medal_count"),
+                   plotOutput("world_map")
+                 ),
+               )
+               
              )),
+    #################Q2 tab#########################
     tabPanel("Question 2 - Athlete Performance",
              fluidPage(
                titlePanel("Olympic Athletes Visualization"),
@@ -63,6 +73,7 @@ ui <- fluidPage(
                  )
                )
              )),
+    #####################Q3 Tab#####################
     tabPanel("Question 3 - Gender Participation",
              fluidPage(
                titlePanel("How has gender participation in the Olympics changed over time?"),
@@ -88,24 +99,19 @@ ui <- fluidPage(
                    )
                  )
                )
-             )),
-    tabPanel("Conclusion",
-             fluidPage(
-               h1("Key Takeaways"),
-               p("Our analysis brings forward the significant trends and insights from Olympic history."),
-               # img(src = "conclusion.jpg", height = "200px"),  
-               tags$ul(
-                 tags$li("Bullet point."),
-                 tags$li("Bullet point."),
-                 tags$li("Bullet point.")
-               )
-             )
-    )
+             ))
   )
 )
 
 server <- function(input, output) {
-  # Question 1 Server Logic
+  
+###################Intro server side#################
+  output$introText <- renderText({
+    paste("HEllo world")
+  })
+  
+  
+#################QUestion 1 Server Side################  
   filtered_data <- reactive({
     req(input$country, input$year, input$sport)
     filter(ath_data, Team == input$country & Year == input$year & Sport == input$sport)
@@ -122,7 +128,7 @@ server <- function(input, output) {
     medal_counts <- c(Bronze = 0, Silver = 0, Gold = 0)
     
     for (medal_type in c("Bronze", "Silver", "Gold")) {
-      medal_counts[medal_type] <- sum(filtered$Medal == medal_type)
+      medal_counts[medal_type] <- sum(filtered$Medal == medal_type, na.rm = TRUE)
     }
     
     paste(
@@ -139,7 +145,7 @@ server <- function(input, output) {
     total_medal_counts <- c(Bronze = 0, Silver = 0, Gold = 0)
     
     for (medal_type in c("Bronze", "Silver", "Gold")) {
-      total_medal_counts[medal_type] <- sum(total$Medal == medal_type)
+      total_medal_counts[medal_type] <- sum(total$Medal == medal_type, na.rm = TRUE)
     }
     
     paste(
@@ -167,7 +173,7 @@ server <- function(input, output) {
     
     ggplot() +
       geom_polygon(data = world, aes(x = long, y = lat, group = group), fill = "grey", color = "black") +
-      geom_polygon(data = selected, aes(x = long, y = lat, group = group), color = 'blue', fill = 'blue')+
+      geom_polygon(data = selected, aes(x = long, y = lat, group = group), color = 'black', fill = 'blue')+
       coord_fixed() +
       theme_void()
   })
