@@ -7,6 +7,8 @@ library(sf)
 library(data.table)
 library(readr)
 library(plotly)
+library(shinythemes)
+
 
 # LOAD DATA 
 ath_data <- read.csv("~/Desktop/DS2003_Shiny/athlete_events.csv")
@@ -17,10 +19,22 @@ ath_data <- ath_data %>%
   mutate(Year = ifelse(Year %in% c(1994, 1998, 2002, 2006, 2010, 2014), Year + 2, Year))
 
 ui <- fluidPage(
+  theme = shinytheme("superhero"),  # Applying Bootstrap's Superhero theme
   titlePanel("Olympic Data Analysis"),
   
   # Create a tabbed layout
   tabsetPanel(
+    tabPanel("Introduction",
+             fluidPage(
+               h1("Introduction"),
+               p("text."),
+               # img(src = "intro.jpg", height = "200px"),  
+               tags$ul(
+                 tags$li("Bullet point."),
+                 tags$li("Bullet point."),
+                 tags$li("Bullet point.")
+               )
+             )),
     tabPanel("Question 1 - World Map",
              fluidPage(
                titlePanel("World Map with ggplot2"),
@@ -74,7 +88,19 @@ ui <- fluidPage(
                    )
                  )
                )
-             ))
+             )),
+    tabPanel("Conclusion",
+             fluidPage(
+               h1("Key Takeaways"),
+               p("Our analysis brings forward the significant trends and insights from Olympic history."),
+               # img(src = "conclusion.jpg", height = "200px"),  
+               tags$ul(
+                 tags$li("Bullet point."),
+                 tags$li("Bullet point."),
+                 tags$li("Bullet point.")
+               )
+             )
+    )
   )
 )
 
