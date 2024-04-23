@@ -32,7 +32,7 @@ ui <- fluidPage(
              fluidPage(
                mainPanel(
                  div(img(src = "olympicDataIntro.png",style = "text-align: center;", height = 600, width = 1000))
-             ))),
+               ))),
     #################Q1 tab#####################
     tabPanel("Question 1 - World Map",
              fluidPage(
@@ -61,9 +61,9 @@ ui <- fluidPage(
                titlePanel("Olympic Athletes Visualization"),
                sidebarLayout(
                  sidebarPanel(
-                   sliderInput("weight", "Weight", min = min(ath_data$Weight, na.rm = TRUE), 
+                   sliderInput("weight", "Weight (kg)", min = min(ath_data$Weight, na.rm = TRUE), 
                                max = max(ath_data$Weight, na.rm = TRUE), value = c(min(ath_data$Weight, na.rm = TRUE), max(ath_data$Weight, na.rm = TRUE))),
-                   sliderInput("height", "Height", min = min(ath_data$Height, na.rm = TRUE), 
+                   sliderInput("height", "Height (cm)", min = min(ath_data$Height, na.rm = TRUE), 
                                max = max(ath_data$Height, na.rm = TRUE), value = c(min(ath_data$Height, na.rm = TRUE), max(ath_data$Height, na.rm = TRUE))),
                    checkboxGroupInput("medal", "Medal", choices = c("Gold" = "Gold", "Silver" = "Silver", "Bronze" = "Bronze", "None" = "NA")),
                    checkboxGroupInput("sport2", "Sport", choices = unique(ath_data$Sport))
@@ -99,19 +99,28 @@ ui <- fluidPage(
                    )
                  )
                )
-             ))
+             )),
+    
+    tabPanel("Conclusion",
+             fluidPage(
+               mainPanel(
+                 div(img(src = "conlcusionText.png",style = "text-align: center;", height = 600, width = 1000))
+               )),
+             )
   )
 )
 
 server <- function(input, output) {
   
-###################Intro server side#################
-  output$introText <- renderText({
-    paste("HEllo world")
+  ###################Intro server side#################
+  output$conclusion_q1_Text <- renderText({
+    paste("Conclusion about question 1\n", 
+        "Conclusion about question 2\n", 
+        "Conclusion about question 3\n")
   })
   
   
-#################QUestion 1 Server Side################  
+  #################QUestion 1 Server Side################  
   filtered_data <- reactive({
     req(input$country, input$year, input$sport)
     filter(ath_data, Team == input$country & Year == input$year & Sport == input$sport)
@@ -219,7 +228,7 @@ server <- function(input, output) {
     p <- ggplot(plot_data, aes(x = Year, y = Athletes, group = Sex, color = Sex, text = paste("Athletes: ", Athletes))) +
       geom_point(size = 4) +
       geom_line() +
-      scale_color_manual(values = c("F" = "pink", "M" = "lightblue")) +
+      scale_color_manual(values = c("pink", "lightblue")) +
       labs(title = "Number of Male and Female Olympians Over Time",
            x = "Year",
            y = "Number of Athletes",
