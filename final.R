@@ -219,7 +219,7 @@ server <- function(input, output) {
     p <- ggplot(plot_data, aes(x = Year, y = Athletes, group = Sex, color = Sex, text = paste("Athletes: ", Athletes))) +
       geom_point(size = 4) +
       geom_line() +
-      scale_color_manual(values = c("pink", "lightblue")) +
+      scale_color_manual(values = c("F" = "pink", "M" = "lightblue")) +
       labs(title = "Number of Male and Female Olympians Over Time",
            x = "Year",
            y = "Number of Athletes",
